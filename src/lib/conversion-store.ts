@@ -11,6 +11,10 @@ export interface ConversionJob {
   status: ConversionStatus;
   progress: number;
   createdAt: Date;
+  publicUrl?: string;
+  filePath?: string;
+  file?: File;
+  errorMessage?: string;
 }
 
 interface ConversionStore {

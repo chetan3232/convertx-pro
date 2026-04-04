@@ -1,34 +1,13 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, Upload } from "lucide-react";
 import { useConversionStore } from "@/lib/conversion-store";
 import { FORMAT_MAP } from "@/lib/formats";
 
 const ConversionProgress = () => {
-  const { jobs, updateJob, setActiveView } = useConversionStore();
+  const { jobs, setActiveView } = useConversionStore();
 
-  useEffect(() => {
-    const intervals: NodeJS.Timeout[] = [];
-    jobs.forEach((job) => {
-      if (job.status === "converting") {
-        const interval = setInterval(() => {
-          const current = useConversionStore.getState().jobs.find((j) => j.id === job.id);
-          if (!current) return clearInterval(interval);
-          const next = Math.min(current.progress + Math.random() * 15 + 5, 100);
-          updateJob(job.id, {
-            progress: next,
-            status: next >= 100 ? "done" : "converting",
-          });
-          if (next >= 100) clearInterval(interval);
-        }, 400 + Math.random() * 300);
-        intervals.push(interval);
-      }
-    });
-
-    return () => intervals.forEach(clearInterval);
-  }, [jobs.length]);
-
-  const allDone = jobs.length > 0 && jobs.every((j) => j.status === "done");
+  const allDone = jobs.length > 0 && jobs.every((j) => j.status === "done" || j.status === "error");
 
   useEffect(() => {
     if (allDone) {
@@ -37,6 +16,16 @@ const ConversionProgress = () => {
     }
   }, [allDone, setActiveView]);
 
+  const statusLabel = (status: string) => {
+    switch (status) {
+      case "uploading": return "Uploading...";
+      case "converting": return "Processing...";
+      case "done": return "Complete";
+      case "error": return "Failed";
+      default: return "Waiting...";
+    }
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-4">
       <motion.h2
@@ -44,13 +33,14 @@ const ConversionProgress = () => {
         animate={{ opacity: 1 }}
         className="text-2xl font-bold text-foreground text-center mb-8"
       >
-        {allDone ? "All done!" : "Converting your files..."}
+        {allDone ? "All done!" : "Uploading & processing your files..."}
       </motion.h2>
 
       {jobs.map((job, i) => {
         const source = FORMAT_MAP[job.sourceFormat];
-        const target = FORMAT_MAP[job.targetFormat];
         const isDone = job.status === "done";
+        const isError = job.status === "error";
+        const isUploading = job.status === "uploading";
         const SourceIcon = source?.icon || Loader2;
 
         return (
@@ -67,19 +57,23 @@ const ConversionProgress = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{job.fileName}</p>
-                <p className="text-xs text-muted-foreground uppercase">
-                  {job.sourceFormat} → {job.targetFormat}
+                <p className="text-xs text-muted-foreground">
+                  {statusLabel(job.status)} · {job.sourceFormat.toUpperCase()} → {job.targetFormat.toUpperCase()}
                 </p>
               </div>
               {isDone ? (
                 <CheckCircle2 className="w-5 h-5 text-success" />
+              ) : isError ? (
+                <AlertCircle className="w-5 h-5 text-destructive" />
+              ) : isUploading ? (
+                <Upload className="w-5 h-5 text-primary animate-pulse" />
               ) : (
                 <Loader2 className="w-5 h-5 text-primary animate-spin" />
               )}
             </div>
             <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
               <motion.div
-                className="h-full rounded-full gradient-primary"
+                className={`h-full rounded-full ${isError ? "bg-destructive" : "gradient-primary"}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${job.progress}%` }}
                 transition={{ ease: "easeOut" }}
