@@ -2,14 +2,17 @@ import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, FileUp, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { detectFormat, getTargetFormats, type FormatInfo } from "@/lib/formats";
+import { detectFormat, getTargetFormats } from "@/lib/formats";
 import { useConversionStore } from "@/lib/conversion-store";
+import { uploadFile } from "@/lib/upload-service";
+import { toast } from "sonner";
 
 const UploadZone = () => {
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [selectedTargets, setSelectedTargets] = useState<Record<string, string>>({});
-  const { addJob, setActiveView } = useConversionStore();
+  const [uploading, setUploading] = useState(false);
+  const { addJob, updateJob, setActiveView } = useConversionStore();
 
   const handleFiles = useCallback((newFiles: FileList | File[]) => {
     const arr = Array.from(newFiles);
@@ -34,24 +37,68 @@ const UploadZone = () => {
     });
   };
 
-  const startConversion = () => {
+  const startConversion = async () => {
+    setUploading(true);
+
+    // Create jobs first
+    const jobEntries: { file: File; jobId: string; target: string; source: string }[] = [];
     files.forEach((file) => {
       const source = detectFormat(file.name);
       const target = selectedTargets[file.name];
       if (source && target) {
+        const jobId = crypto.randomUUID();
         addJob({
-          id: crypto.randomUUID(),
+          id: jobId,
           fileName: file.name,
           fileSize: file.size,
           sourceFormat: source.ext,
           targetFormat: target,
-          status: "converting",
+          status: "uploading",
           progress: 0,
           createdAt: new Date(),
+          file,
         });
+        jobEntries.push({ file, jobId, target, source: source.ext });
       }
     });
+
     setActiveView("converting");
+
+    // Upload files in parallel
+    await Promise.all(
+      jobEntries.map(async ({ file, jobId }) => {
+        updateJob(jobId, { status: "uploading", progress: 20 });
+
+        const result = await uploadFile(file);
+
+        if (result.success) {
+          // Simulate conversion progress after upload
+          updateJob(jobId, {
+            status: "converting",
+            progress: 50,
+            publicUrl: result.publicUrl,
+            filePath: result.filePath,
+          });
+
+          // Simulate conversion steps
+          await new Promise((r) => setTimeout(r, 600));
+          updateJob(jobId, { progress: 75 });
+          await new Promise((r) => setTimeout(r, 500));
+          updateJob(jobId, { progress: 100, status: "done" });
+        } else {
+          updateJob(jobId, {
+            status: "error",
+            progress: 0,
+            errorMessage: result.error,
+          });
+          toast.error(`Failed to upload ${file.name}: ${result.error}`);
+        }
+      })
+    );
+
+    setUploading(false);
+    setFiles([]);
+    setSelectedTargets({});
   };
 
   return (
@@ -66,6 +113,7 @@ const UploadZone = () => {
             : "border-border hover:border-muted-foreground/50"
         }`}
         onClick={() => {
+          if (uploading) return;
           const input = document.createElement("input");
           input.type = "file";
           input.multiple = true;
@@ -75,7 +123,7 @@ const UploadZone = () => {
           };
           input.click();
         }}
-        whileHover={{ scale: 1.005 }}
+        whileHover={uploading ? {} : { scale: 1.005 }}
       >
         <motion.div
           animate={dragOver ? { scale: 1.1 } : { scale: 1 }}
@@ -89,7 +137,7 @@ const UploadZone = () => {
               Drop files here or click to browse
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              PDF, DOCX, XLSX, PPTX, Images, and 15+ formats supported
+              PDF, DOCX, XLSX, PPTX, Images, and 15+ formats · Auto-deleted after 30 min
             </p>
           </div>
         </motion.div>
@@ -158,10 +206,11 @@ const UploadZone = () => {
             <motion.div layout className="flex justify-end pt-2">
               <Button
                 onClick={startConversion}
+                disabled={uploading}
                 className="gradient-primary text-primary-foreground border-0 px-8"
                 size="lg"
               >
-                Convert {files.length} file{files.length > 1 ? "s" : ""}
+                {uploading ? "Uploading..." : `Convert ${files.length} file${files.length > 1 ? "s" : ""}`}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </motion.div>
