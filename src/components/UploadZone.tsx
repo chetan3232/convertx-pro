@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { detectFormat, getTargetFormats } from "@/lib/formats";
 import { useConversionStore } from "@/lib/conversion-store";
 import { uploadFile } from "@/lib/upload-service";
+import { convertFile } from "@/lib/pdf-tools-service";
 import { toast } from "sonner";
 
 const UploadZone = () => {
