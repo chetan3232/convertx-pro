@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { Download, RotateCcw, FileCheck, Archive, AlertCircle, Clock } from "lucide-react";
+import { Download, RotateCcw, FileCheck, AlertCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useConversionStore } from "@/lib/conversion-store";
 import { FORMAT_MAP } from "@/lib/formats";
+import { downloadFile } from "@/lib/pdf-tools-service";
 import { toast } from "sonner";
 
 const ResultsView = () => {
@@ -12,8 +13,10 @@ const ResultsView = () => {
 
   const handleDownload = (job: typeof doneJobs[0]) => {
     if (job.publicUrl) {
-      window.open(job.publicUrl, "_blank");
-      toast.success(`Downloading ${job.fileName}`);
+      const ext = job.targetFormat || "pdf";
+      const outputName = job.fileName.replace(/\.\w+$/, `.${ext}`);
+      downloadFile(job.publicUrl, outputName);
+      toast.success(`Downloading ${outputName}`);
     } else {
       toast.error("Download URL not available");
     }

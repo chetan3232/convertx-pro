@@ -8,6 +8,9 @@ export interface PdfToolResult {
   originalSize?: number;
   compressedSize?: number;
   savings?: number;
+  extractedText?: string;
+  fullLength?: number;
+  note?: string;
   error?: string;
 }
 
@@ -91,4 +94,29 @@ export async function convertFile(file: File, target: string): Promise<PdfToolRe
   formData.append("file", file);
   formData.append("target", target);
   return callPdfTool("convert", formData);
+}
+
+export async function ocrFile(file: File): Promise<PdfToolResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return callPdfTool("ocr", formData);
+}
+
+// Helper to trigger direct download from a URL
+export async function downloadFile(url: string, fileName: string) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch {
+    // Fallback: open in new tab
+    window.open(url, "_blank");
+  }
 }

@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
   mergePdfs, splitPdf, rotatePdf, compressPdf,
-  watermarkPdf, protectPdf, unlockPdf,
+  watermarkPdf, protectPdf, unlockPdf, ocrFile, downloadFile,
 } from "@/lib/pdf-tools-service";
 import type { PdfToolResult } from "@/lib/pdf-tools-service";
 import { toast } from "sonner";
@@ -91,9 +91,9 @@ const toolConfig: Record<string, {
   },
   ocr: {
     title: "OCR",
-    desc: "Extract text from scanned documents",
+    desc: "Extract text from scanned documents using AI",
     icon: ScanText,
-    accept: ".pdf,.jpg,.jpeg,.png",
+    accept: ".pdf,.jpg,.jpeg,.png,.webp",
     multiple: false,
   },
 };
@@ -144,6 +144,9 @@ const ToolPage = () => {
         case "unlock":
           res = await unlockPdf(files[0], fields.password || "");
           break;
+        case "ocr":
+          res = await ocrFile(files[0]);
+          break;
         default:
           res = { success: false, error: "Tool not implemented yet" };
       }
@@ -159,6 +162,11 @@ const ToolPage = () => {
     } else {
       toast.error(res.error || "Operation failed");
     }
+  };
+
+  const handleDownload = (url: string, name: string) => {
+    downloadFile(url, name);
+    toast.success(`Downloading ${name}`);
   };
 
   if (!config) {
@@ -311,14 +319,34 @@ const ToolPage = () => {
                   </p>
                 )}
 
+                {/* OCR extracted text preview */}
+                {result.extractedText && (
+                  <div className="text-left mb-4">
+                    <p className="text-sm font-medium text-foreground mb-2">Extracted Text Preview:</p>
+                    <div className="bg-secondary rounded-lg p-4 max-h-60 overflow-y-auto">
+                      <pre className="text-xs text-muted-foreground whitespace-pre-wrap break-words font-mono">
+                        {result.extractedText}
+                      </pre>
+                    </div>
+                    {result.fullLength && result.fullLength > 2000 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Showing first 2000 of {result.fullLength} characters. Download for full text.
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {result.publicUrl && (
                   <Button
-                    onClick={() => window.open(result.publicUrl, "_blank")}
+                    onClick={() => handleDownload(
+                      result.publicUrl!,
+                      tool === "ocr" ? "extracted_text.txt" : "output.pdf"
+                    )}
                     className="gradient-primary text-primary-foreground border-0"
                     size="lg"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download PDF
+                    Download {tool === "ocr" ? "Text File" : "PDF"}
                   </Button>
                 )}
 
@@ -329,7 +357,7 @@ const ToolPage = () => {
                         key={f.page}
                         variant="outline"
                         className="w-full"
-                        onClick={() => window.open(f.publicUrl, "_blank")}
+                        onClick={() => handleDownload(f.publicUrl, `page_${f.page}.pdf`)}
                       >
                         <Download className="w-4 h-4 mr-2" />
                         Page {f.page}
