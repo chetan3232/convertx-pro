@@ -1,12 +1,28 @@
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileUp, X, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import {
+  Upload, FileUp, X, ArrowRight,
+  Combine, Scissors, Minimize2, RotateCw,
+  Lock, Unlock, Stamp, ScanText, RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { detectFormat, getTargetFormats } from "@/lib/formats";
 import { useConversionStore } from "@/lib/conversion-store";
 import { uploadFile } from "@/lib/upload-service";
 import { convertFile } from "@/lib/pdf-tools-service";
 import { toast } from "sonner";
+
+const pdfTools = [
+  { icon: Combine, title: "Merge PDF", desc: "Combine multiple PDFs", slug: "merge" },
+  { icon: Scissors, title: "Split PDF", desc: "Extract pages", slug: "split" },
+  { icon: Minimize2, title: "Compress", desc: "Reduce file size", slug: "compress" },
+  { icon: RotateCw, title: "Rotate", desc: "Rotate pages", slug: "rotate" },
+  { icon: Lock, title: "Protect", desc: "Add password", slug: "protect" },
+  { icon: Unlock, title: "Unlock", desc: "Remove password", slug: "unlock" },
+  { icon: Stamp, title: "Watermark", desc: "Add watermark", slug: "watermark" },
+  { icon: ScanText, title: "OCR", desc: "Extract text", slug: "ocr" },
+];
 
 const UploadZone = () => {
   const [dragOver, setDragOver] = useState(false);
@@ -38,10 +54,12 @@ const UploadZone = () => {
     });
   };
 
+  const hasPdfFiles = files.some((f) => f.name.toLowerCase().endsWith(".pdf"));
+  const hasImageFiles = files.some((f) => /\.(jpg|jpeg|png|webp)$/i.test(f.name));
+
   const startConversion = async () => {
     setUploading(true);
 
-    // Create jobs first
     const jobEntries: { file: File; jobId: string; target: string; source: string }[] = [];
     files.forEach((file) => {
       const source = detectFormat(file.name);
@@ -65,17 +83,14 @@ const UploadZone = () => {
 
     setActiveView("converting");
 
-    // Upload files in parallel
     await Promise.all(
       jobEntries.map(async ({ file, jobId, target, source }) => {
         updateJob(jobId, { status: "uploading", progress: 20 });
 
-        // Check if real conversion is supported
         const canConvert =
           (["txt", "md", "csv"].includes(source) && target === "pdf");
 
         if (canConvert) {
-          // Real conversion via pdf-tools edge function
           updateJob(jobId, { status: "converting", progress: 40 });
           const result = await convertFile(file, target);
 
@@ -95,7 +110,6 @@ const UploadZone = () => {
             toast.error(`Conversion failed: ${result.error}`);
           }
         } else {
-          // Upload only (no server-side conversion available)
           const result = await uploadFile(file);
 
           if (result.success) {
@@ -227,6 +241,38 @@ const UploadZone = () => {
                 </motion.div>
               );
             })}
+
+            {/* PDF Tools Section - shown when PDF/image files are uploaded */}
+            {(hasPdfFiles || hasImageFiles) && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="pt-4"
+              >
+                <p className="text-sm font-medium text-muted-foreground mb-3">
+                  Or use a PDF tool:
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {pdfTools
+                    .filter((t) => {
+                      if (t.slug === "ocr") return true;
+                      return hasPdfFiles;
+                    })
+                    .map((t) => (
+                      <Link
+                        key={t.slug}
+                        to={`/tools/${t.slug}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="glass rounded-lg p-3 text-center hover:bg-secondary/80 transition-colors cursor-pointer">
+                          <t.icon className="w-5 h-5 text-primary mx-auto mb-1" />
+                          <p className="text-xs font-medium text-foreground">{t.title}</p>
+                        </div>
+                      </Link>
+                    ))}
+                </div>
+              </motion.div>
+            )}
 
             <motion.div layout className="flex justify-end pt-2">
               <Button
