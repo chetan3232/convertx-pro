@@ -1,18 +1,19 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Combine, Scissors, Minimize2, RotateCw,
   Lock, Unlock, Stamp, ScanText,
 } from "lucide-react";
 
 const tools = [
-  { icon: Combine, title: "Merge PDF", desc: "Combine multiple PDFs into one" },
-  { icon: Scissors, title: "Split PDF", desc: "Extract pages or split documents" },
-  { icon: Minimize2, title: "Compress PDF", desc: "Reduce file size without losing quality" },
-  { icon: RotateCw, title: "Rotate Pages", desc: "Rotate and reorder PDF pages" },
-  { icon: Lock, title: "Protect PDF", desc: "Add password protection" },
-  { icon: Unlock, title: "Unlock PDF", desc: "Remove password from PDF" },
-  { icon: Stamp, title: "Watermark", desc: "Add text or image watermarks" },
-  { icon: ScanText, title: "OCR", desc: "Extract text from scanned documents" },
+  { icon: Combine, title: "Merge PDF", desc: "Combine multiple PDFs into one", slug: "merge" },
+  { icon: Scissors, title: "Split PDF", desc: "Extract pages or split documents", slug: "split" },
+  { icon: Minimize2, title: "Compress PDF", desc: "Reduce file size without losing quality", slug: "compress" },
+  { icon: RotateCw, title: "Rotate Pages", desc: "Rotate and reorder PDF pages", slug: "rotate" },
+  { icon: Lock, title: "Protect PDF", desc: "Add password protection", slug: "protect" },
+  { icon: Unlock, title: "Unlock PDF", desc: "Remove password from PDF", slug: "unlock" },
+  { icon: Stamp, title: "Watermark", desc: "Add text or image watermarks", slug: "watermark" },
+  { icon: ScanText, title: "OCR", desc: "Extract text from scanned documents", slug: "ocr" },
 ];
 
 const ToolsGrid = () => (
