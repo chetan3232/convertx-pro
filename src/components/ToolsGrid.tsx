@@ -35,21 +35,22 @@ const ToolsGrid = () => (
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {tools.map((tool, i) => (
-          <motion.div
-            key={tool.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            whileHover={{ y: -4 }}
-            className="glass rounded-xl p-6 cursor-pointer group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
-              <tool.icon className="w-5 h-5 text-primary" />
-            </div>
-            <h3 className="text-sm font-semibold text-foreground">{tool.title}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{tool.desc}</p>
-          </motion.div>
+          <Link key={tool.title} to={`/tools/${tool.slug}`}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              whileHover={{ y: -4 }}
+              className="glass rounded-xl p-6 cursor-pointer group"
+            >
+              <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                <tool.icon className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="text-sm font-semibold text-foreground">{tool.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{tool.desc}</p>
+            </motion.div>
+          </Link>
         ))}
       </div>
     </div>
