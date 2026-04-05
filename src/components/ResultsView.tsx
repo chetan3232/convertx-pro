@@ -58,7 +58,7 @@ const ResultsView = () => {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{job.fileName}</p>
                 <p className="text-xs text-muted-foreground">
-                  {(job.fileSize / 1024 / 1024).toFixed(2)} MB · Uploaded as {job.sourceFormat.toUpperCase()}
+                  {(job.fileSize / 1024 / 1024).toFixed(2)} MB · {job.sourceFormat.toUpperCase()} → {job.targetFormat.toUpperCase()}
                 </p>
               </div>
               <Button
