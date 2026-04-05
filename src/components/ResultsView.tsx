@@ -30,7 +30,7 @@ const ResultsView = () => {
           <FileCheck className="w-8 h-8 text-success" />
         </div>
         <h2 className="text-2xl font-bold text-foreground">
-          {doneJobs.length} file{doneJobs.length > 1 ? "s" : ""} uploaded
+          {doneJobs.length} file{doneJobs.length > 1 ? "s" : ""} converted
           {errorJobs.length > 0 && `, ${errorJobs.length} failed`}
         </h2>
         <div className="flex items-center justify-center gap-1 mt-2 text-sm text-muted-foreground">
