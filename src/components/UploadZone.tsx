@@ -67,32 +67,56 @@ const UploadZone = () => {
 
     // Upload files in parallel
     await Promise.all(
-      jobEntries.map(async ({ file, jobId }) => {
+      jobEntries.map(async ({ file, jobId, target, source }) => {
         updateJob(jobId, { status: "uploading", progress: 20 });
 
-        const result = await uploadFile(file);
+        // Check if real conversion is supported
+        const canConvert =
+          (["txt", "md", "csv"].includes(source) && target === "pdf");
 
-        if (result.success) {
-          // Simulate conversion progress after upload
-          updateJob(jobId, {
-            status: "converting",
-            progress: 50,
-            publicUrl: result.publicUrl,
-            filePath: result.filePath,
-          });
+        if (canConvert) {
+          // Real conversion via pdf-tools edge function
+          updateJob(jobId, { status: "converting", progress: 40 });
+          const result = await convertFile(file, target);
 
-          // Simulate conversion steps
-          await new Promise((r) => setTimeout(r, 600));
-          updateJob(jobId, { progress: 75 });
-          await new Promise((r) => setTimeout(r, 500));
-          updateJob(jobId, { progress: 100, status: "done" });
+          if (result.success) {
+            updateJob(jobId, {
+              status: "done",
+              progress: 100,
+              publicUrl: result.publicUrl,
+              filePath: result.filePath,
+            });
+          } else {
+            updateJob(jobId, {
+              status: "error",
+              progress: 0,
+              errorMessage: result.error,
+            });
+            toast.error(`Conversion failed: ${result.error}`);
+          }
         } else {
-          updateJob(jobId, {
-            status: "error",
-            progress: 0,
-            errorMessage: result.error,
-          });
-          toast.error(`Failed to upload ${file.name}: ${result.error}`);
+          // Upload only (no server-side conversion available)
+          const result = await uploadFile(file);
+
+          if (result.success) {
+            updateJob(jobId, {
+              status: "converting",
+              progress: 50,
+              publicUrl: result.publicUrl,
+              filePath: result.filePath,
+            });
+            await new Promise((r) => setTimeout(r, 600));
+            updateJob(jobId, { progress: 75 });
+            await new Promise((r) => setTimeout(r, 500));
+            updateJob(jobId, { progress: 100, status: "done" });
+          } else {
+            updateJob(jobId, {
+              status: "error",
+              progress: 0,
+              errorMessage: result.error,
+            });
+            toast.error(`Failed to upload ${file.name}: ${result.error}`);
+          }
         }
       })
     );
