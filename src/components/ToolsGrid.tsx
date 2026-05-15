@@ -97,9 +97,9 @@ const categories = [
       },
       {
         icon: BookOpen,
-        title: "eBook Tool",
-        desc: "Convert to EPUB",
-        slug: "epub",
+        title: "MOBI → EPUB",
+        desc: "eBook conversion",
+        slug: "mobi-epub",
       },
     ],
   },

@@ -122,7 +122,7 @@ const ResultsView = () => {
       )}
 
       <div className="mb-8 space-y-3">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="wait">
           {doneJobs.map((job) => {
             const target = FORMAT_MAP[job.targetFormat];
             const Icon = target?.icon || FileCheck;

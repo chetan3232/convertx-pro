@@ -114,13 +114,15 @@ const UploadZone = () => {
       target: string;
       source: string;
     }[] = [];
+
     files.forEach((file) => {
       const source = detectFormat(file.name);
       const target = selectedTargets[file.name];
       if (source && target) {
-        const jobId = typeof crypto.randomUUID === 'function' 
-          ? crypto.randomUUID() 
-          : Math.random().toString(36).substring(2) + Date.now().toString(36);
+        const jobId =
+          typeof crypto.randomUUID === "function"
+            ? crypto.randomUUID()
+            : Math.random().toString(36).substring(2) + Date.now().toString(36);
         addJob({
           id: jobId,
           fileName: file.name,
@@ -142,49 +144,39 @@ const UploadZone = () => {
       jobEntries.map(async ({ file, jobId, target, source }) => {
         updateJob(jobId, { status: "uploading", progress: 20 });
 
-        const canConvert =
-          ["txt", "md", "csv"].includes(source) && target === "pdf";
+        // Try in-browser conversion first (CSV↔JSON, TXT→DOCX, etc.)
+        updateJob(jobId, { status: "converting", progress: 40 });
+        const result = await convertFile(file, target);
 
-        if (canConvert) {
-          updateJob(jobId, { status: "converting", progress: 40 });
-          const result = await convertFile(file, target);
-
-          if (result.success) {
+        if (result.success) {
+          updateJob(jobId, {
+            status: "done",
+            progress: 100,
+            publicUrl: result.publicUrl,
+            filePath: result.filePath,
+          });
+          toast.success(`✓ ${file.name} converted!`);
+        } else {
+          // convertFile failed → try plain upload (for preview/download of original)
+          const uploadResult = await uploadFile(file);
+          if (uploadResult.success) {
+            await new Promise((r) => setTimeout(r, 500));
             updateJob(jobId, {
               status: "done",
               progress: 100,
-              publicUrl: result.publicUrl,
-              filePath: result.filePath,
+              publicUrl: uploadResult.publicUrl,
+              filePath: uploadResult.filePath,
             });
+            toast.warning(
+              `${file.name}: Full ${source.toUpperCase()}→${target.toUpperCase()} conversion requires backend. Showing original file.`
+            );
           } else {
             updateJob(jobId, {
               status: "error",
               progress: 0,
-              errorMessage: result.error,
+              errorMessage: result.error || uploadResult.error,
             });
-            toast.error(`Conversion failed: ${result.error}`);
-          }
-        } else {
-          const result = await uploadFile(file);
-
-          if (result.success) {
-            updateJob(jobId, {
-              status: "converting",
-              progress: 50,
-              publicUrl: result.publicUrl,
-              filePath: result.filePath,
-            });
-            await new Promise((r) => setTimeout(r, 600));
-            updateJob(jobId, { progress: 75 });
-            await new Promise((r) => setTimeout(r, 500));
-            updateJob(jobId, { progress: 100, status: "done" });
-          } else {
-            updateJob(jobId, {
-              status: "error",
-              progress: 0,
-              errorMessage: result.error,
-            });
-            toast.error(`Failed to upload ${file.name}: ${result.error}`);
+            toast.error(`Failed: ${result.error}`);
           }
         }
       })

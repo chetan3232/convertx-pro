@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Zap, Menu, X } from "lucide-react";
+import { Zap, Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { ThemeToggle } from "./ThemeToggle";
 import { HistoryDrawer } from "./HistoryDrawer";
+import { SettingsPanel } from "./SettingsPanel";
 import { Clock } from "lucide-react";
 
 const navItems = ["Convert", "Tools", "API", "Pricing"];
@@ -12,6 +13,7 @@ const navItems = ["Convert", "Tools", "API", "Pricing"];
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <motion.header
@@ -20,8 +22,22 @@ const Header = () => {
       className="glass fixed left-0 right-0 top-0 z-50"
     >
       <div className="container flex h-16 items-center justify-between">
-        <a href="/" className="flex items-center gap-2">
-          <div className="gradient-primary flex h-8 w-8 items-center justify-center rounded-lg">
+        <a href="/" className="flex items-center gap-2.5">
+          <img
+            src="/logo.png"
+            alt="ConvertX Pro"
+            className="h-9 w-auto object-contain"
+            onError={(e) => {
+              const t = e.currentTarget;
+              t.style.display = "none";
+              const fallback = t.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = "flex";
+            }}
+          />
+          <div
+            className="gradient-primary hidden h-8 w-8 items-center justify-center rounded-lg"
+            style={{ display: "none" }}
+          >
             <Zap className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="text-lg font-bold text-foreground">
@@ -49,6 +65,14 @@ const Header = () => {
             className="relative text-muted-foreground hover:text-foreground"
           >
             <Clock className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSettingsOpen(true)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="h-[1.2rem] w-[1.2rem]" />
           </Button>
           <ThemeToggle />
           <Button
@@ -81,6 +105,10 @@ const Header = () => {
       <HistoryDrawer
         isOpen={historyOpen}
         onClose={() => setHistoryOpen(false)}
+      />
+      <SettingsPanel
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
 
       {mobileOpen && (

@@ -37,10 +37,7 @@ const Footer = () => (
           </h4>
           <ul className="space-y-4 text-sm text-muted-foreground">
             <li>
-              <a
-                href="#convert"
-                className="transition-colors hover:text-primary"
-              >
+              <a href="#convert" className="transition-colors hover:text-primary">
                 Converter
               </a>
             </li>
@@ -52,6 +49,11 @@ const Footer = () => (
             <li>
               <a href="#" className="transition-colors hover:text-primary">
                 OCR Engine
+              </a>
+            </li>
+            <li>
+              <a href="#roadmap" className="transition-colors hover:text-primary">
+                Roadmap
               </a>
             </li>
             <li>
@@ -116,13 +118,12 @@ const Footer = () => (
 
       <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
         <p className="text-xs text-muted-foreground">
-          © 2026 ConvertX Pro. All processing is transient and local-first where
-          possible.
+          © 2026 ConvertX Pro. All processing is transient and privacy-first.
         </p>
         <div className="flex items-center gap-6 text-xs font-medium text-muted-foreground">
-          <span>v1.0.0 MVP</span>
+          <span className="rounded-full bg-secondary px-2.5 py-1 font-bold">Phase 1 MVP · v1.0</span>
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
             All Systems Operational
           </span>
         </div>

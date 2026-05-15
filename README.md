@@ -1,170 +1,225 @@
-🚀 ConvertX Pro
+# ⚡ ConvertX Pro
 
-«🔗 Live Website: https://convertx-pro.lovable.app»
+> **"Upload any file → get the best possible output in seconds, with perfect formatting."**
 
-ConvertX Pro is a modern, high-performance file conversion platform that allows users to convert, process, and optimize documents across multiple formats with speed, accuracy, and security.
+[![Phase](https://img.shields.io/badge/Phase-1%20MVP-blue)](https://github.com/chetan3232/convertx-pro)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Stack](https://img.shields.io/badge/Stack-React%20%2B%20Vite%20%2B%20Supabase-orange)](https://github.com/chetan3232/convertx-pro)
 
----
-
-📌 Overview
-
-ConvertX Pro is designed to be a one-stop solution for all file conversion needs — from simple TXT → PDF conversions to advanced document processing like OCR, batch conversion, and format optimization.
+ConvertX Pro is a **fast, accurate, privacy-first** document processing platform. Convert, process, and enhance documents across 25+ formats — at scale, with high fidelity, and zero retention by default.
 
 ---
 
-✨ Features
+## 🎯 Product Vision
 
-📄 Document Conversion
-
-- TXT → PDF / DOCX / HTML / RTF
-- PDF → DOCX / TXT / Images
-- DOCX → PDF / TXT / HTML
-- XLSX ↔ CSV
-- PPTX → PDF / Images
+Deliver a platform where any user — student, developer, or enterprise professional — can upload any file and receive a perfectly formatted output in seconds, with no tracking or data retention.
 
 ---
 
-🧠 Smart Features
+## 👥 Target Users
 
-- 🔍 Auto file format detection
-- 🤖 Smart conversion suggestions
-- ⚡ Fast processing engine
-- 🎯 High formatting accuracy
-
----
-
-📦 Batch Processing
-
-- Upload multiple files
-- Convert all files at once
-- Download as ZIP
+| Persona | Primary Use Cases |
+|---|---|
+| 🎓 Students | PDF ↔ DOCX, handwritten notes OCR, thesis formatting |
+| 💼 Office Professionals | Excel/Word/PPT workflows, batch conversion, watermarking |
+| 👨‍💻 Developers | JSON/XML/CSV tools, HTML→PDF, API-driven automation |
+| 📚 Creators | EPUB/MOBI eBook creation, image-to-doc pipelines |
+| 🏢 SMBs | Bulk conversion, API integration, team quotas |
 
 ---
 
-🖼 OCR (Optical Character Recognition)
+## ✨ Features
 
-- Image → Text
-- Scanned PDF → Editable document
+### 📄 Document Conversion Matrix (25+ Formats)
 
----
+**Text & Markup**
+- TXT ↔ PDF / DOCX / HTML / RTF / MD
+- MD → HTML / PDF / DOCX
+- RTF ↔ DOCX / PDF / TXT
 
-🔧 Document Tools
+**PDF (Advanced)**
+- From PDF → DOCX, XLSX (tables), PPTX, TXT, HTML, JPG/PNG, EPUB
+- To PDF → DOCX, XLSX, PPTX, HTML, Images
 
-- Merge PDF
-- Split PDF
-- Compress PDF
-- Add watermark (coming soon)
+**Microsoft Office**
+- DOC ↔ DOCX → PDF / HTML / EPUB / TXT
+- XLS ↔ XLSX ↔ CSV → PDF
+- PPT ↔ PPTX → PDF / Images
 
----
+**eBooks**
+- EPUB ↔ PDF / DOCX / TXT
+- MOBI → EPUB / PDF
 
-🎨 UI/UX
+**Web & Data**
+- HTML ↔ PDF / DOCX / TXT
+- JSON ↔ CSV ↔ XML
 
-- Modern, premium design
-- Dark / Light mode
-- Smooth animations
-- Mobile responsive (PWA-ready)
-
----
-
-🏗 Tech Stack
-
-Frontend
-
-- React.js / Next.js
-- Tailwind CSS
-- Framer Motion
-
-Backend
-
-- Node.js (Express/Fastify)
-- Python Microservices
-
-Conversion Engines
-
-- LibreOffice
-- Pandoc
-- Ghostscript
-- Tesseract OCR
-
-Storage & Infra
-
-- Supabase / Firebase
-- AWS S3 (optional)
-- Redis + BullMQ (queue system)
+**OCR (Scanned)**
+- JPG / PNG / WEBP → TXT / DOCX / Searchable PDF
+- Scanned PDF → Editable DOCX (layout-aware, v2)
 
 ---
 
-⚙️ How It Works
+### 🧰 Document Utilities
 
-1. Upload your file
-2. Select desired format
-3. Click Convert
-4. Preview output
-5. Download instantly
-
----
-
-🔐 Security & Privacy
-
-- 🔒 Secure file handling
-- ⏳ Auto file deletion (within 1 hour)
-- 🚫 No permanent storage
-- 🔐 End-to-end encryption (planned)
+- ✅ Merge / Split PDF
+- ✅ Compress PDF (Quick + Lossless modes)
+- ✅ Rotate / Reorder pages
+- ✅ Password protect / Unlock PDF
+- ✅ Watermark text on all pages
+- ✅ OCR text extraction → TXT or DOCX
+- 🔜 Basic annotations (v2)
 
 ---
 
-📈 Roadmap
+### 🤖 Intelligence Layer
 
-- [ ] Advanced OCR (multi-language + handwriting)
-- [ ] Cloud integrations (Google Drive, Dropbox)
-- [ ] Public API for developers
-- [ ] Offline mode (WASM-based)
-- [ ] AI-based document enhancement
-
----
-
-💰 Monetization
-
-- Free plan with limited usage
-- Pro plan (unlimited + faster processing)
-- API access (pay-as-you-go)
+- **Auto Format Detection** — MIME + content sniffing
+- **Smart Suggestions** — best target format per use-case
+- **Layout Recovery** — tables, columns, headers preserved
+- **Multi-language OCR** — v2 with PaddleOCR fallback
+- **Conversion Modes**: Quick (fast) vs Lossless (max fidelity)
 
 ---
 
-🧪 Performance Goals
+### 📦 Batch Processing
 
-- ⚡ < 5s conversion for small files
-- 📊 95%+ success rate
-- 🚀 High-speed processing
-
----
-
-🤝 Contributing
-
-Contributions are welcome!
-If you have ideas or improvements, feel free to fork and submit a pull request.
+- Upload multiple files simultaneously
+- Set per-file output format
+- Download all results as a single ZIP archive
 
 ---
 
-📬 Contact
+### 🎨 UI/UX
 
-For support, feedback, or collaboration:
+- Premium SaaS design — Light/Dark mode
+- Framer Motion micro-animations
+- Drag & drop with Smart Analysis phase
+- In-browser PDF/Image preview
+- Session-persistent conversion history
+- Settings panel: mode, privacy, notifications
+- Fully responsive (PWA-ready)
 
-- 🌐 Website: https://convertx-pro.lovable.app
+---
+
+## 🚀 Roadmap
+
+### Phase 1 — MVP *(In Progress)*
+- [x] Core conversions: PDF ↔ DOCX, TXT, XLSX
+- [x] Batch upload + ZIP download
+- [x] Basic OCR (image → text + DOCX)
+- [x] Premium UI + dark/light mode
+- [x] Session history + file preview
+- [ ] Quick vs Lossless mode enforcement
+
+### Phase 2 — Scale *(4–6 weeks)*
+- [ ] eBook support: EPUB, MOBI, AZW
+- [ ] HTML/Markdown conversions
+- [ ] Smart format suggestions (AI)
+- [ ] Cloud import/export (Drive, Dropbox)
+- [ ] Advanced layout recovery + multi-language OCR
+
+### Phase 3 — Enterprise *(v2)*
+- [ ] Public REST API + API keys
+- [ ] Async job queue (Redis + BullMQ)
+- [ ] Offline WASM-based conversions
+- [ ] Team workspace + quotas
+- [ ] Enterprise SLA + on-prem option
+
+---
+
+## 🏗 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 + Vite + TypeScript + Tailwind CSS |
+| Animations | Framer Motion |
+| State | Zustand (persist) |
+| Backend | Supabase Edge Functions (Deno) |
+| Storage | Supabase Storage (auto-expiry) |
+| OCR | Tesseract (v2: PaddleOCR) |
+| Workers (v2) | LibreOffice · Pandoc · Ghostscript · Sharp |
+| Queue (v2) | Redis + BullMQ |
+
+---
+
+## ⚙️ Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/chetan3232/convertx-pro.git
+cd convertx-pro
+
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+# Fill in your VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
+
+# Start development server
+npm run dev
+
+# Format code
+npm run format
+
+# Run linter
+npm run lint
+```
+
+---
+
+## 🔐 Security & Privacy
+
+- 🔒 TLS on all connections
+- ⏳ Files auto-deleted after 1 hour (configurable)
+- 🧠 No-store mode: memory-only processing
+- 🔐 Encrypted storage at rest
+- 🦠 Virus scanning via ClamAV (planned)
+- 🚫 Rate limiting + abuse protection
+
+---
+
+## 📈 Performance Targets
+
+| File Size | Target Time |
+|---|---|
+| < 5 MB | < 5 seconds |
+| 5–50 MB | < 20 seconds |
+| Success rate | ≥ 97% |
+| Queue wait | < 2 seconds (p50) |
+
+---
+
+## 💰 Monetization
+
+| Plan | Details |
+|---|---|
+| Free | Limited conversions/day, size caps |
+| Pro | Unlimited, priority queue, no ads |
+| API | Pay-per-use (per page/MB) |
+| Enterprise (v2) | SLA, on-prem, custom quotas |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Fork the repository, make your changes, and submit a pull request.
+
+---
+
+## 📬 Contact
+
+- 🌐 Website: [convertx-pro.lovable.app](https://convertx-pro.lovable.app)
 - 📧 Email: gamerchetan323@gmail.com
+- 🐙 GitHub: [@chetan3232](https://github.com/chetan3232)
 
 ---
 
-⭐ Support
+## 🏁 License
 
-If you like this project, consider giving it a ⭐ on GitHub!
-
----
-
-🏁 License
-
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
 
 ---
 
-«⚡ ConvertX Pro — Convert Anything, Anytime, Anywhere.»
+*⚡ ConvertX Pro — Convert Anything, Anytime, Anywhere.*

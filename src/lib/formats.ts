@@ -5,6 +5,8 @@ import {
   Image,
   Code,
   BookOpen,
+  FileCode,
+  Globe,
 } from "lucide-react";
 
 export interface FormatInfo {
@@ -16,145 +18,71 @@ export interface FormatInfo {
 }
 
 export const FORMAT_MAP: Record<string, FormatInfo> = {
-  pdf: {
-    ext: "pdf",
-    label: "PDF",
-    category: "Document",
-    icon: FileText,
-    color: "text-destructive",
-  },
-  docx: {
-    ext: "docx",
-    label: "DOCX",
-    category: "Document",
-    icon: FileText,
-    color: "text-primary",
-  },
-  doc: {
-    ext: "doc",
-    label: "DOC",
-    category: "Document",
-    icon: FileText,
-    color: "text-primary",
-  },
-  txt: {
-    ext: "txt",
-    label: "TXT",
-    category: "Text",
-    icon: FileText,
-    color: "text-muted-foreground",
-  },
-  rtf: {
-    ext: "rtf",
-    label: "RTF",
-    category: "Document",
-    icon: FileText,
-    color: "text-primary",
-  },
-  md: {
-    ext: "md",
-    label: "Markdown",
-    category: "Text",
-    icon: Code,
-    color: "text-accent",
-  },
-  html: {
-    ext: "html",
-    label: "HTML",
-    category: "Web",
-    icon: Code,
-    color: "text-warning",
-  },
-  xlsx: {
-    ext: "xlsx",
-    label: "XLSX",
-    category: "Spreadsheet",
-    icon: FileSpreadsheet,
-    color: "text-success",
-  },
-  xls: {
-    ext: "xls",
-    label: "XLS",
-    category: "Spreadsheet",
-    icon: FileSpreadsheet,
-    color: "text-success",
-  },
-  csv: {
-    ext: "csv",
-    label: "CSV",
-    category: "Data",
-    icon: FileSpreadsheet,
-    color: "text-success",
-  },
-  pptx: {
-    ext: "pptx",
-    label: "PPTX",
-    category: "Presentation",
-    icon: Presentation,
-    color: "text-warning",
-  },
-  ppt: {
-    ext: "ppt",
-    label: "PPT",
-    category: "Presentation",
-    icon: Presentation,
-    color: "text-warning",
-  },
-  epub: {
-    ext: "epub",
-    label: "EPUB",
-    category: "eBook",
-    icon: BookOpen,
-    color: "text-accent",
-  },
-  jpg: {
-    ext: "jpg",
-    label: "JPG",
-    category: "Image",
-    icon: Image,
-    color: "text-accent",
-  },
-  png: {
-    ext: "png",
-    label: "PNG",
-    category: "Image",
-    icon: Image,
-    color: "text-accent",
-  },
-  json: {
-    ext: "json",
-    label: "JSON",
-    category: "Data",
-    icon: Code,
-    color: "text-warning",
-  },
-  xml: {
-    ext: "xml",
-    label: "XML",
-    category: "Data",
-    icon: Code,
-    color: "text-warning",
-  },
+  // --- Text & Markup ---
+  pdf: { ext: "pdf", label: "PDF", category: "Document", icon: FileText, color: "text-destructive" },
+  docx: { ext: "docx", label: "DOCX", category: "Document", icon: FileText, color: "text-primary" },
+  doc: { ext: "doc", label: "DOC", category: "Document", icon: FileText, color: "text-primary" },
+  txt: { ext: "txt", label: "TXT", category: "Text", icon: FileText, color: "text-muted-foreground" },
+  rtf: { ext: "rtf", label: "RTF", category: "Document", icon: FileText, color: "text-primary" },
+  md: { ext: "md", label: "Markdown", category: "Text", icon: Code, color: "text-accent" },
+  html: { ext: "html", label: "HTML", category: "Web", icon: Globe, color: "text-warning" },
+
+  // --- Spreadsheets ---
+  xlsx: { ext: "xlsx", label: "XLSX", category: "Spreadsheet", icon: FileSpreadsheet, color: "text-success" },
+  xls: { ext: "xls", label: "XLS", category: "Spreadsheet", icon: FileSpreadsheet, color: "text-success" },
+  csv: { ext: "csv", label: "CSV", category: "Data", icon: FileSpreadsheet, color: "text-success" },
+
+  // --- Presentations ---
+  pptx: { ext: "pptx", label: "PPTX", category: "Presentation", icon: Presentation, color: "text-warning" },
+  ppt: { ext: "ppt", label: "PPT", category: "Presentation", icon: Presentation, color: "text-warning" },
+
+  // --- eBooks ---
+  epub: { ext: "epub", label: "EPUB", category: "eBook", icon: BookOpen, color: "text-accent" },
+  mobi: { ext: "mobi", label: "MOBI", category: "eBook", icon: BookOpen, color: "text-accent" },
+
+  // --- Images ---
+  jpg: { ext: "jpg", label: "JPG", category: "Image", icon: Image, color: "text-accent" },
+  jpeg: { ext: "jpeg", label: "JPEG", category: "Image", icon: Image, color: "text-accent" },
+  png: { ext: "png", label: "PNG", category: "Image", icon: Image, color: "text-accent" },
+  webp: { ext: "webp", label: "WEBP", category: "Image", icon: Image, color: "text-accent" },
+
+  // --- Data ---
+  json: { ext: "json", label: "JSON", category: "Data", icon: FileCode, color: "text-warning" },
+  xml: { ext: "xml", label: "XML", category: "Data", icon: FileCode, color: "text-warning" },
 };
 
 export const CONVERSION_TARGETS: Record<string, string[]> = {
-  pdf: ["docx", "xlsx", "pptx", "txt", "html", "jpg", "png", "epub"],
-  docx: ["pdf", "html", "epub", "txt", "rtf"],
-  doc: ["docx", "pdf", "txt"],
-  txt: ["pdf", "docx", "html", "md"],
-  md: ["html", "pdf", "docx"],
+  // Text & Markup
+  txt: ["pdf", "docx", "html", "md", "rtf"],
+  md:  ["html", "pdf", "docx", "txt"],
   rtf: ["docx", "pdf", "txt"],
   html: ["pdf", "docx", "txt"],
-  xlsx: ["csv", "pdf"],
-  xls: ["xlsx", "csv", "pdf"],
-  csv: ["xlsx", "json"],
+
+  // PDF (Advanced)
+  pdf: ["docx", "xlsx", "pptx", "txt", "html", "jpg", "png", "epub"],
+
+  // Microsoft Office
+  doc:  ["docx", "pdf", "txt"],
+  docx: ["pdf", "html", "epub", "txt", "rtf"],
+  xls:  ["xlsx", "csv", "pdf"],
+  xlsx: ["csv", "pdf", "json"],
+  ppt:  ["pptx", "pdf"],
   pptx: ["pdf", "jpg", "png"],
-  ppt: ["pptx", "pdf"],
+
+  // eBooks
   epub: ["pdf", "docx", "txt"],
-  jpg: ["png", "pdf", "txt"],
-  png: ["jpg", "pdf", "txt"],
+  mobi: ["epub", "pdf", "txt"],
+
+  // Images (OCR path)
+  jpg:  ["png", "pdf", "txt"],
+  jpeg: ["jpg", "pdf", "txt"],
+  png:  ["jpg", "pdf", "txt"],
+  webp: ["jpg", "png", "pdf"],
+
+  // Data
+  csv:  ["xlsx", "json", "xml"],
   json: ["csv", "xml"],
-  xml: ["json"],
+  xml:  ["json", "csv"],
 };
 
 export function detectFormat(fileName: string): FormatInfo | null {
