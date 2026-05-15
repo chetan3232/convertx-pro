@@ -151,7 +151,7 @@ If you have ideas or improvements, feel free to fork and submit a pull request.
 For support, feedback, or collaboration:
 
 - 🌐 Website: https://convertx-pro.lovable.app
-- 📧 Email: your-email@example.com
+- 📧 Email: gamerchetan323@gmail.com
 
 ---
 

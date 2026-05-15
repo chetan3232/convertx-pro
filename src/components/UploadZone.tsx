@@ -118,7 +118,9 @@ const UploadZone = () => {
       const source = detectFormat(file.name);
       const target = selectedTargets[file.name];
       if (source && target) {
-        const jobId = crypto.randomUUID();
+        const jobId = typeof crypto.randomUUID === 'function' 
+          ? crypto.randomUUID() 
+          : Math.random().toString(36).substring(2) + Date.now().toString(36);
         addJob({
           id: jobId,
           fileName: file.name,
