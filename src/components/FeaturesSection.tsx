@@ -25,10 +25,10 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section className="py-24 relative">
-    <div className="absolute inset-0 grid-pattern opacity-30" />
+  <section className="relative py-24">
+    <div className="grid-pattern absolute inset-0 opacity-30" />
     <div className="container relative">
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {features.map((f, i) => (
           <motion.div
             key={f.title}
@@ -38,11 +38,13 @@ const FeaturesSection = () => (
             transition={{ delay: i * 0.1 }}
             className="glass rounded-2xl p-6"
           >
-            <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center mb-4">
-              <f.icon className="w-6 h-6 text-primary-foreground" />
+            <div className="gradient-primary mb-4 flex h-12 w-12 items-center justify-center rounded-xl">
+              <f.icon className="h-6 w-6 text-primary-foreground" />
             </div>
             <h3 className="text-lg font-semibold text-foreground">{f.title}</h3>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.desc}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {f.desc}
+            </p>
           </motion.div>
         ))}
       </div>

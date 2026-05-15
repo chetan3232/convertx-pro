@@ -1,6 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { PDFDocument, StandardFonts, rgb, degrees } from "https://esm.sh/pdf-lib@1.17.1";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb,
+  degrees,
+} from "https://esm.sh/pdf-lib@1.17.1";
 import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
@@ -105,9 +110,9 @@ function detectScript(text: string): "devanagari" | "gujarati" | "latin" {
   for (const char of text) {
     const code = char.charCodeAt(0);
     // Gujarati range: U+0A80 – U+0AFF
-    if (code >= 0x0A80 && code <= 0x0AFF) return "gujarati";
+    if (code >= 0x0a80 && code <= 0x0aff) return "gujarati";
     // Devanagari range: U+0900 – U+097F
-    if (code >= 0x0900 && code <= 0x097F) return "devanagari";
+    if (code >= 0x0900 && code <= 0x097f) return "devanagari";
   }
   return "latin";
 }
@@ -292,17 +297,17 @@ async function handleProtect(formData: FormData) {
     // a workaround: embed the password in metadata and use PDF permissions
     // For real encryption we'd need a native library.
     // Instead, let's use pdf-lib to add user/owner password via the low-level API
-    
+
     // Import encrypt-capable library
     const { default: PDFLib } = await import("https://esm.sh/pdf-lib@1.17.1");
-    
+
     // Load and re-save with encryption metadata
     const doc = await PDFDocument.load(bytes);
-    
+
     // Set document metadata to indicate protection
     doc.setTitle(doc.getTitle() || file.name);
     doc.setProducer("FileMorph PDF Tools");
-    
+
     // pdf-lib doesn't have built-in encryption, so we'll note this limitation
     // but still process the file and add metadata
     const pdfBytes = await doc.save();
@@ -312,11 +317,11 @@ async function handleProtect(formData: FormData) {
       pdfBytes,
       file.name.replace(".pdf", "_protected.pdf")
     );
-    
-    return jsonResponse({ 
-      success: true, 
+
+    return jsonResponse({
+      success: true,
       ...result,
-      note: "PDF has been processed. Note: Full AES encryption requires a native PDF library. The file has been re-saved with metadata protection."
+      note: "PDF has been processed. Note: Full AES encryption requires a native PDF library. The file has been re-saved with metadata protection.",
     });
   } catch (err) {
     return jsonResponse({ error: `Protection failed: ${err.message}` }, 500);
@@ -334,7 +339,7 @@ async function handleUnlock(formData: FormData) {
     const bytes = new Uint8Array(await file.arrayBuffer());
     // Try to load with ignoreEncryption flag
     const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-    
+
     // Re-save without encryption
     const pdfBytes = await doc.save();
     const supabase = await getSupabase();
@@ -343,12 +348,15 @@ async function handleUnlock(formData: FormData) {
       pdfBytes,
       file.name.replace(".pdf", "_unlocked.pdf")
     );
-    
+
     return jsonResponse({ success: true, ...result });
   } catch (err) {
-    return jsonResponse({ 
-      error: `Unlock failed: ${err.message}. The PDF may use encryption that cannot be removed without the correct password.` 
-    }, 500);
+    return jsonResponse(
+      {
+        error: `Unlock failed: ${err.message}. The PDF may use encryption that cannot be removed without the correct password.`,
+      },
+      500
+    );
   }
 }
 
@@ -371,10 +379,10 @@ async function handleConvert(formData: FormData) {
 
     // Detect script to choose the right font
     const script = detectScript(textContent);
-    
+
     let font;
     let fontBytes: Uint8Array | null = null;
-    
+
     if (script === "gujarati") {
       fontBytes = await fetchGujaratiFont();
     } else if (script === "devanagari") {
@@ -382,7 +390,7 @@ async function handleConvert(formData: FormData) {
     } else {
       fontBytes = await fetchUnicodeFont();
     }
-    
+
     if (fontBytes) {
       try {
         font = await doc.embedFont(fontBytes, { subset: false });
@@ -415,7 +423,9 @@ async function handleConvert(formData: FormData) {
 
     for (const line of lines) {
       // Word-wrap long lines
-      const maxCharsPerLine = Math.floor((width - margin * 2) / (fontSize * 0.55));
+      const maxCharsPerLine = Math.floor(
+        (width - margin * 2) / (fontSize * 0.55)
+      );
       const wrappedLines =
         line.length > maxCharsPerLine
           ? line.match(new RegExp(`.{1,${maxCharsPerLine}}`, "g")) || [""]
@@ -429,7 +439,7 @@ async function handleConvert(formData: FormData) {
         }
 
         const textToDraw = wl || " ";
-        
+
         try {
           page.drawText(textToDraw, {
             x: margin,
@@ -485,13 +495,17 @@ async function handleConvert(formData: FormData) {
   // PDF → TXT
   if (sourceExt === "pdf" && targetFormat === "txt") {
     return jsonResponse(
-      { error: "PDF to TXT extraction requires OCR. Use the OCR tool instead." },
+      {
+        error: "PDF to TXT extraction requires OCR. Use the OCR tool instead.",
+      },
       501
     );
   }
 
   return jsonResponse(
-    { error: `Conversion from ${sourceExt} to ${targetFormat} is not yet supported.` },
+    {
+      error: `Conversion from ${sourceExt} to ${targetFormat} is not yet supported.`,
+    },
     501
   );
 }
@@ -515,46 +529,56 @@ async function handleOCR(formData: FormData) {
     const isImage = mimeType.startsWith("image/");
     const mediaType = isImage ? mimeType : "application/pdf";
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: "You are an OCR assistant. Extract ALL text from the provided document/image exactly as it appears. Preserve the original formatting, line breaks, and structure. If text is in Gujarati, Hindi, or any other language, extract it as-is in the original script. Do not translate. Do not add commentary. Only output the extracted text."
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Extract all text from this document/image. Preserve formatting and all characters including special symbols and non-Latin scripts."
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${mediaType};base64,${base64Data}`
-                }
-              }
-            ]
-          }
-        ],
-      }),
-    });
+    const response = await fetch(
+      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an OCR assistant. Extract ALL text from the provided document/image exactly as it appears. Preserve the original formatting, line breaks, and structure. If text is in Gujarati, Hindi, or any other language, extract it as-is in the original script. Do not translate. Do not add commentary. Only output the extracted text.",
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Extract all text from this document/image. Preserve formatting and all characters including special symbols and non-Latin scripts.",
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${mediaType};base64,${base64Data}`,
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
       if (response.status === 429) {
-        return jsonResponse({ error: "AI service rate limited. Please try again in a moment." }, 429);
+        return jsonResponse(
+          { error: "AI service rate limited. Please try again in a moment." },
+          429
+        );
       }
       if (response.status === 402) {
-        return jsonResponse({ error: "AI credits exhausted. Please add funds." }, 402);
+        return jsonResponse(
+          { error: "AI credits exhausted. Please add funds." },
+          402
+        );
       }
       return jsonResponse({ error: "OCR processing failed" }, 500);
     }
@@ -563,17 +587,25 @@ async function handleOCR(formData: FormData) {
     const extractedText = aiResult.choices?.[0]?.message?.content || "";
 
     if (!extractedText.trim()) {
-      return jsonResponse({ error: "No text could be extracted from the document" }, 400);
+      return jsonResponse(
+        { error: "No text could be extracted from the document" },
+        400
+      );
     }
 
     // Save extracted text as a .txt file
     const textBytes = new TextEncoder().encode(extractedText);
     const supabase = await getSupabase();
     const outputName = file.name.replace(/\.\w+$/, "_ocr.txt");
-    const result = await uploadResult(supabase, textBytes, outputName, "text/plain");
+    const result = await uploadResult(
+      supabase,
+      textBytes,
+      outputName,
+      "text/plain"
+    );
 
-    return jsonResponse({ 
-      success: true, 
+    return jsonResponse({
+      success: true,
       ...result,
       extractedText: extractedText.substring(0, 2000), // Preview in response
       fullLength: extractedText.length,

@@ -4,6 +4,7 @@ import UploadZone from "@/components/UploadZone";
 import ConversionProgress from "@/components/ConversionProgress";
 import ResultsView from "@/components/ResultsView";
 import FeaturesSection from "@/components/FeaturesSection";
+import { UseCases } from "@/components/UseCases";
 import ToolsGrid from "@/components/ToolsGrid";
 import Footer from "@/components/Footer";
 import { useConversionStore } from "@/lib/conversion-store";
@@ -16,50 +17,65 @@ const Index = () => {
       <Header />
 
       {/* Hero */}
-      <section id="convert" className="pt-32 pb-16 relative overflow-hidden">
-        <div className="absolute inset-0 grid-pattern opacity-20" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+      <section id="convert" className="relative overflow-hidden pb-16 pt-32">
+        <div className="grid-pattern absolute inset-0 opacity-20" />
+        <div className="absolute left-1/2 top-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
 
         <div className="container relative">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-16 text-center"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary border border-border text-xs text-muted-foreground mb-6"
+              transition={{ delay: 0.2 }}
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-secondary/50 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground backdrop-blur-md"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse-glow" />
-              Privacy-first · Auto-delete after 1 hour
+              <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+              Privacy-centric conversion engine
             </motion.div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
-              Convert any file.
+            <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
+              Universal file conversion.
               <br />
-              <span className="gradient-text">Perfect output.</span>
+              <span className="gradient-text">Zero quality loss.</span>
             </h1>
-            <p className="text-lg text-muted-foreground mt-6 max-w-2xl mx-auto">
-              Fast, accurate document conversion across 15+ formats.
-              Upload → convert → download in seconds.
+            <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+              Convert between 15+ formats with enterprise-grade accuracy. No
+              tracking, no logs, just perfect output in seconds.
             </p>
           </motion.div>
 
           <AnimatePresence mode="wait">
             {activeView === "upload" && (
-              <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="upload"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <UploadZone />
               </motion.div>
             )}
             {activeView === "converting" && (
-              <motion.div key="converting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="converting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <ConversionProgress />
               </motion.div>
             )}
             {activeView === "results" && (
-              <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <ResultsView />
               </motion.div>
             )}
@@ -68,6 +84,7 @@ const Index = () => {
       </section>
 
       <FeaturesSection />
+      <UseCases />
       <ToolsGrid />
       <Footer />
     </div>

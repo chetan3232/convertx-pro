@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { Document, Packer, Paragraph, TextRun } from "docx";
 
 export interface PdfToolResult {
   success: boolean;
@@ -14,7 +15,10 @@ export interface PdfToolResult {
   error?: string;
 }
 
-async function callPdfTool(action: string, formData: FormData): Promise<PdfToolResult> {
+async function callPdfTool(
+  action: string,
+  formData: FormData
+): Promise<PdfToolResult> {
   try {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -47,14 +51,21 @@ export async function mergePdfs(files: File[]): Promise<PdfToolResult> {
   return callPdfTool("merge", formData);
 }
 
-export async function splitPdf(file: File, pages?: string): Promise<PdfToolResult> {
+export async function splitPdf(
+  file: File,
+  pages?: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   if (pages) formData.append("pages", pages);
   return callPdfTool("split", formData);
 }
 
-export async function rotatePdf(file: File, angle: number, pages?: string): Promise<PdfToolResult> {
+export async function rotatePdf(
+  file: File,
+  angle: number,
+  pages?: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("angle", String(angle));
@@ -68,28 +79,40 @@ export async function compressPdf(file: File): Promise<PdfToolResult> {
   return callPdfTool("compress", formData);
 }
 
-export async function watermarkPdf(file: File, text: string): Promise<PdfToolResult> {
+export async function watermarkPdf(
+  file: File,
+  text: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("text", text);
   return callPdfTool("watermark", formData);
 }
 
-export async function protectPdf(file: File, password: string): Promise<PdfToolResult> {
+export async function protectPdf(
+  file: File,
+  password: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("password", password);
   return callPdfTool("protect", formData);
 }
 
-export async function unlockPdf(file: File, password: string): Promise<PdfToolResult> {
+export async function unlockPdf(
+  file: File,
+  password: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("password", password);
   return callPdfTool("unlock", formData);
 }
 
-export async function convertFile(file: File, target: string): Promise<PdfToolResult> {
+export async function convertFile(
+  file: File,
+  target: string
+): Promise<PdfToolResult> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("target", target);
@@ -102,21 +125,46 @@ export async function ocrFile(file: File): Promise<PdfToolResult> {
   return callPdfTool("ocr", formData);
 }
 
-// Helper to trigger direct download from a URL
-export async function downloadFile(url: string, fileName: string) {
+export async function createDocxFromText(
+  text: string,
+  fileName: string
+): Promise<Blob> {
+  const doc = new Document({
+    sections: [
+      {
+        properties: {},
+        children: text.split("\n").map(
+          (line) =>
+            new Paragraph({
+              children: [new TextRun(line)],
+            })
+        ),
+      },
+    ],
+  });
+
+  return await Packer.toBlob(doc);
+}
+
+// Helper to trigger direct download from a URL or Blob
+export async function downloadFile(urlOrBlob: string | Blob, fileName: string) {
   try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+    const isBlob = urlOrBlob instanceof Blob;
+    const blobUrl = isBlob ? URL.createObjectURL(urlOrBlob) : urlOrBlob;
+
     const a = document.createElement("a");
     a.href = blobUrl;
     a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(blobUrl);
+
+    if (isBlob) {
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+    }
   } catch {
-    // Fallback: open in new tab
-    window.open(url, "_blank");
+    if (typeof urlOrBlob === "string") {
+      window.open(urlOrBlob, "_blank");
+    }
   }
 }
