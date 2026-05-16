@@ -13,6 +13,7 @@ import {
   FileJson,
   Table2,
   BookOpen,
+  RefreshCw,
 } from "lucide-react";
 
 const categories = [
@@ -36,6 +37,12 @@ const categories = [
         title: "Compress PDF",
         desc: "Reduce file size",
         slug: "compress",
+      },
+      {
+        icon: RefreshCw,
+        title: "PDF Converter",
+        desc: "Convert PDF to Word, JPG, etc.",
+        slug: "pdf-converter",
       },
       {
         icon: RotateCw,

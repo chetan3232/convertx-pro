@@ -142,7 +142,7 @@ export async function convertFile(
     const text = await file.text();
     const blob = new Blob(
       [
-        `<html><body><pre style="font-family:sans-serif;padding:2rem;white-space:pre-wrap">${text}</pre></body></html>`,
+        `<html><body style="font-family:sans-serif;padding:3rem;line-height:1.6"><pre style="white-space:pre-wrap">${text}</pre></body></html>`,
       ],
       { type: "text/html" }
     );
@@ -150,14 +150,31 @@ export async function convertFile(
     return { success: true, publicUrl: url, note: "Browser-rendered PDF preview" };
   }
 
+  // IMAGE → PDF (simple wrap)
+  if (["jpg", "jpeg", "png", "webp"].includes(ext) && target === "pdf") {
+    const dataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+    const blob = new Blob(
+      [
+        `<html><body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0"><img src="${dataUrl}" style="max-width:100%;height:auto;box-shadow:0 0 20px rgba(0,0,0,0.1)"></body></html>`,
+      ],
+      { type: "text/html" }
+    );
+    const url = URL.createObjectURL(blob);
+    return { success: true, publicUrl: url, note: "Image-to-PDF preview" };
+  }
+
   // CSV → local JSON conversion
   if (ext === "csv" && target === "json") {
     const text = await file.text();
     const lines = text.split("\n").filter(Boolean);
-    const headers = lines[0].split(",");
+    const headers = lines[0].split(",").map(h => h.trim());
     const json = lines.slice(1).map((line) => {
       const values = line.split(",");
-      return Object.fromEntries(headers.map((h, i) => [h.trim(), values[i]?.trim()]));
+      return Object.fromEntries(headers.map((h, i) => [h, values[i]?.trim()]));
     });
     const blob = new Blob([JSON.stringify(json, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -172,7 +189,10 @@ export async function convertFile(
       const headers = Object.keys(json[0]);
       const csv = [
         headers.join(","),
-        ...json.map((row) => headers.map((h) => `"${row[h] ?? ""}"`).join(",")),
+        ...json.map((row) => headers.map((h) => {
+          const val = row[h];
+          return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+        }).join(",")),
       ].join("\n");
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);

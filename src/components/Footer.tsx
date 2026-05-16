@@ -73,8 +73,13 @@ const Footer = () => (
               </a>
             </li>
             <li>
-              <a href="#" className="transition-colors hover:text-primary">
+              <a href="#api" className="transition-colors hover:text-primary">
                 API Keys
+              </a>
+            </li>
+            <li>
+              <a href="#pricing" className="transition-colors hover:text-primary">
+                Pricing
               </a>
             </li>
           </ul>

@@ -1,24 +1,10 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, Link } from "react-router-dom";
-import {
-  Upload,
-  FileUp,
-  X,
-  ArrowLeft,
-  Download,
-  Loader2,
-  Combine,
-  Scissors,
-  Minimize2,
-  RotateCw,
-  Lock,
-  Unlock,
-  Stamp,
-  ScanText,
-} from "lucide-react";
+import { RefreshCw, Upload, FileUp, X, ArrowLeft, Download, Loader2, Combine, Scissors, Minimize2, RotateCw, Lock, Unlock, Stamp, ScanText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -30,6 +16,7 @@ import {
   protectPdf,
   unlockPdf,
   ocrFile,
+  convertFile,
   downloadFile,
   createDocxFromText,
 } from "@/lib/pdf-tools-service";
@@ -138,7 +125,31 @@ const toolConfig: Record<
     accept: ".pdf,.jpg,.jpeg,.png,.webp",
     multiple: false,
   },
+  "pdf-converter": {
+    title: "PDF Converter",
+    desc: "Convert PDF to Word, Excel, PowerPoint, Image and more",
+    icon: RefreshCw,
+    accept: ".pdf",
+    multiple: false,
+    extraFields: [
+      {
+        name: "target",
+        label: "Convert to",
+        placeholder: "Select format",
+        type: "select",
+      },
+    ],
+  },
 };
+
+const pdfConversionTargets = [
+  { ext: "docx", label: "Word (.docx)" },
+  { ext: "xlsx", label: "Excel (.xlsx)" },
+  { ext: "pptx", label: "PowerPoint (.pptx)" },
+  { ext: "jpg", label: "Image (.jpg)" },
+  { ext: "txt", label: "Text (.txt)" },
+  { ext: "html", label: "HTML (.html)" },
+];
 
 const ToolPage = () => {
   const { tool } = useParams<{ tool: string }>();
@@ -195,6 +206,9 @@ const ToolPage = () => {
           break;
         case "ocr":
           res = await ocrFile(files[0]);
+          break;
+        case "pdf-converter":
+          res = await convertFile(files[0], fields.target || "docx");
           break;
         default:
           res = { success: false, error: "Tool not implemented yet" };
@@ -339,17 +353,37 @@ const ToolPage = () => {
                       <label className="mb-1 block text-sm font-medium text-foreground">
                         {field.label}
                       </label>
-                      <Input
-                        type={field.type || "text"}
-                        placeholder={field.placeholder}
-                        value={fields[field.name] || ""}
-                        onChange={(e) =>
-                          setFields((prev) => ({
-                            ...prev,
-                            [field.name]: e.target.value,
-                          }))
-                        }
-                      />
+                      {field.type === "select" ? (
+                        <Select
+                          onValueChange={(v) =>
+                            setFields((prev) => ({ ...prev, [field.name]: v }))
+                          }
+                          defaultValue={pdfConversionTargets[0].ext}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder={field.placeholder} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {pdfConversionTargets.map((t) => (
+                              <SelectItem key={t.ext} value={t.ext}>
+                                {t.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type={field.type || "text"}
+                          placeholder={field.placeholder}
+                          value={fields[field.name] || ""}
+                          onChange={(e) =>
+                            setFields((prev) => ({
+                              ...prev,
+                              [field.name]: e.target.value,
+                            }))
+                          }
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

@@ -52,6 +52,13 @@ const Header = () => {
             <a
               key={item}
               href={`/#${item.toLowerCase()}`}
+              onClick={(e) => {
+                if (window.location.pathname === "/") {
+                  e.preventDefault();
+                  const el = document.getElementById(item.toLowerCase());
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item}

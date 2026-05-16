@@ -11,6 +11,8 @@ import RoadmapSection from "@/components/RoadmapSection";
 import ComparisonSection from "@/components/ComparisonSection";
 import FormatsSection from "@/components/FormatsSection";
 import { HeroMockup } from "@/components/HeroMockup";
+import PricingSection from "@/components/PricingSection";
+import APISection from "@/components/APISection";
 import Footer from "@/components/Footer";
 import { useConversionStore } from "@/lib/conversion-store";
 import { Shield, Zap, Brain, Lock } from "lucide-react";
@@ -182,6 +184,8 @@ const Index = () => {
       <UseCases />
       <FormatsSection />
       <ToolsGrid />
+      <PricingSection />
+      <APISection />
       <RoadmapSection />
       <Footer />
     </div>
