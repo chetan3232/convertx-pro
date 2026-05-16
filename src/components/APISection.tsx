@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { Code2, Cpu, Globe, Lock, Terminal } from "lucide-react";
+import { Code2, Cpu, Globe, Lock, Terminal, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettingsStore } from "@/lib/settings-store";
+import { toast } from "sonner";
 
 const apiFeatures = [
   {
@@ -26,11 +28,26 @@ const apiFeatures = [
 ];
 
 const APISection = () => {
+  const { apiKey, setApiKey } = useSettingsStore();
+
+  const generateKey = () => {
+    const newKey = "cxp_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    setApiKey(newKey);
+    toast.success("API Key generated successfully!");
+  };
+
+  const copyKey = () => {
+    if (apiKey) {
+      navigator.clipboard.writeText(apiKey);
+      toast.success("API Key copied to clipboard!");
+    }
+  };
+
   const codeSnippet = `// Convert PDF to Word via API
 const convert = async (file) => {
   const response = await fetch('https://api.convertx.pro/v1/convert', {
     method: 'POST',
-    headers: { 'Authorization': 'Bearer YOUR_KEY' },
+    headers: { 'Authorization': 'Bearer ${apiKey || 'YOUR_KEY'}' },
     body: file
   });
   return await response.json();
@@ -56,6 +73,34 @@ const convert = async (file) => {
                 Everything you can do on the web, you can do with code.
               </p>
 
+              {apiKey ? (
+                <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/5 p-6 backdrop-blur-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Key className="h-5 w-5 text-primary" />
+                      <span className="text-sm font-bold uppercase tracking-wider text-primary">Your Active API Key</span>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={generateKey} className="text-xs">Regenerate</Button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="flex-1 rounded-lg bg-background/50 p-3 font-mono text-sm text-foreground border border-border">
+                      {apiKey}
+                    </code>
+                    <Button onClick={copyKey} className="gradient-primary border-0">Copy</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-10 flex flex-wrap gap-4">
+                  <Button className="gradient-primary border-0 text-primary-foreground" size="lg">
+                    <Code2 className="mr-2 h-5 w-5" />
+                    Read API Docs
+                  </Button>
+                  <Button variant="outline" size="lg" onClick={generateKey}>
+                    Get Free API Key
+                  </Button>
+                </div>
+              )}
+
               <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
                 {apiFeatures.map((feature) => (
                   <div key={feature.title} className="group">
@@ -67,16 +112,6 @@ const convert = async (file) => {
                   </div>
                 ))}
               </div>
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                <Button className="gradient-primary border-0 text-primary-foreground" size="lg">
-                  <Code2 className="mr-2 h-5 w-5" />
-                  Read API Docs
-                </Button>
-                <Button variant="outline" size="lg">
-                  Get Free API Key
-                </Button>
-              </div>
             </motion.div>
           </div>
 
@@ -87,7 +122,7 @@ const convert = async (file) => {
             className="flex-1"
           >
             <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-slate-950 p-1 shadow-2xl shadow-primary/10">
-              <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-3">
+              <div className="flex items-center gap-2 border-white/10 bg-white/5 px-4 py-3">
                 <div className="flex gap-1.5">
                   <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
                   <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/50" />
@@ -97,7 +132,7 @@ const convert = async (file) => {
                   conversion_demo.js
                 </div>
               </div>
-              <div className="p-6 font-mono text-sm leading-relaxed text-slate-300">
+              <div className="p-6 font-mono text-sm leading-relaxed text-slate-300 overflow-x-auto">
                 <pre>
                   <code>{codeSnippet}</code>
                 </pre>

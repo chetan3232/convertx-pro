@@ -5,6 +5,10 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import * as pdfjsLib from "pdfjs-dist";
+
+// Configure pdfjs worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
@@ -137,6 +141,17 @@ export async function convertFile(
   // Local fallback: for text-based conversions, do them in-browser
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
+  // If backend is configured, prioritize it for "Working Mode" accuracy
+  if (isSupabaseConfigured) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("target", target);
+    const res = await callPdfTool("convert", formData);
+    if (res.success) return res;
+    // If backend fails, we can fall through to local fallbacks
+  }
+
+  // Local fallback: for simple text-based conversions
   // TXT/MD → PDF (browser print approach via object URL)
   if (["txt", "md"].includes(ext) && target === "pdf") {
     const text = await file.text();
@@ -267,4 +282,20 @@ export async function downloadFile(
       window.open(urlOrBlob, "_blank");
     }
   }
+}
+
+/** Extract text from a PDF file in the browser */
+export async function extractTextFromPdf(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item: any) => item.str)
+      .join(" ");
+    fullText += pageText + "\n\n";
+  }
+  return fullText;
 }

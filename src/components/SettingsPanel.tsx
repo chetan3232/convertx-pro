@@ -12,22 +12,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type ConversionMode = "quick" | "lossless";
-type DeleteDelay = "1h" | "30m" | "session";
+// Settings moved to persistent store in @/lib/settings-store.ts
 
-interface SettingsState {
-  mode: ConversionMode;
-  deleteDelay: DeleteDelay;
-  noStore: boolean;
-  notifications: boolean;
-}
-
-const defaultSettings: SettingsState = {
-  mode: "quick",
-  deleteDelay: "1h",
-  noStore: false,
-  notifications: true,
-};
+import { useSettingsStore } from "@/lib/settings-store";
 
 export const SettingsPanel = ({
   isOpen,
@@ -36,7 +23,12 @@ export const SettingsPanel = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+  const { 
+    mode, setMode, 
+    deleteDelay, setDeleteDelay, 
+    noStore, toggleNoStore, 
+    notifications, toggleNotifications 
+  } = useSettingsStore();
 
   return (
     <motion.div
@@ -100,18 +92,18 @@ export const SettingsPanel = ({
               ] as const).map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => setSettings((s) => ({ ...s, mode: m.id }))}
+                  onClick={() => setMode(m.id)}
                   className={`flex flex-col items-start rounded-xl border-2 p-4 text-left transition-all ${
-                    settings.mode === m.id
+                    mode === m.id
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-border/80 hover:bg-secondary/50"
                   }`}
                 >
                   <div className="mb-2 flex w-full items-center justify-between">
                     <m.icon
-                      className={`h-5 w-5 ${settings.mode === m.id ? "text-primary" : "text-muted-foreground"}`}
+                      className={`h-5 w-5 ${mode === m.id ? "text-primary" : "text-muted-foreground"}`}
                     />
-                    {settings.mode === m.id && (
+                    {mode === m.id && (
                       <Check className="h-4 w-4 text-primary" />
                     )}
                   </div>
@@ -153,11 +145,9 @@ export const SettingsPanel = ({
                   ).map((opt) => (
                     <button
                       key={opt.id}
-                      onClick={() =>
-                        setSettings((s) => ({ ...s, deleteDelay: opt.id }))
-                      }
+                      onClick={() => setDeleteDelay(opt.id)}
                       className={`flex-1 rounded-lg px-3 py-2 text-xs font-bold transition-all ${
-                        settings.deleteDelay === opt.id
+                        deleteDelay === opt.id
                           ? "bg-primary text-primary-foreground"
                           : "bg-secondary text-muted-foreground hover:text-foreground"
                       }`}
@@ -179,16 +169,14 @@ export const SettingsPanel = ({
                   </p>
                 </div>
                 <button
-                  onClick={() =>
-                    setSettings((s) => ({ ...s, noStore: !s.noStore }))
-                  }
+                  onClick={toggleNoStore}
                   className={`relative h-6 w-11 rounded-full transition-colors ${
-                    settings.noStore ? "bg-primary" : "bg-secondary"
+                    noStore ? "bg-primary" : "bg-secondary"
                   }`}
                 >
                   <span
                     className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${
-                      settings.noStore ? "left-6" : "left-1"
+                      noStore ? "left-6" : "left-1"
                     }`}
                   />
                 </button>
@@ -214,19 +202,14 @@ export const SettingsPanel = ({
                 </p>
               </div>
               <button
-                onClick={() =>
-                  setSettings((s) => ({
-                    ...s,
-                    notifications: !s.notifications,
-                  }))
-                }
+                onClick={toggleNotifications}
                 className={`relative h-6 w-11 rounded-full transition-colors ${
-                  settings.notifications ? "bg-primary" : "bg-secondary"
+                  notifications ? "bg-primary" : "bg-secondary"
                 }`}
               >
                 <span
                   className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${
-                    settings.notifications ? "left-6" : "left-1"
+                    notifications ? "left-6" : "left-1"
                   }`}
                 />
               </button>
