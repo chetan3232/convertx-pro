@@ -26,7 +26,7 @@ const Header = () => {
           <img
             src="/logo.png"
             alt="ConvertX Pro"
-            className="h-9 w-auto object-contain"
+            className="h-10 w-auto object-contain"
             onError={(e) => {
               const t = e.currentTarget;
               t.style.display = "none";
@@ -35,14 +35,16 @@ const Header = () => {
             }}
           />
           <div
-            className="gradient-primary hidden h-8 w-8 items-center justify-center rounded-lg"
+            className="items-center gap-2.5"
             style={{ display: "none" }}
           >
-            <Zap className="h-4 w-4 text-primary-foreground" />
+            <div className="gradient-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Zap className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold text-foreground">
+              Convert<span className="gradient-text">X</span> Pro
+            </span>
           </div>
-          <span className="text-lg font-bold text-foreground">
-            Convert<span className="gradient-text">X</span> Pro
-          </span>
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">

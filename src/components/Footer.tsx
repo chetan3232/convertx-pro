@@ -7,12 +7,28 @@ const Footer = () => (
       <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
         <div className="col-span-2 lg:col-span-2">
           <div className="mb-6 flex items-center gap-2">
-            <div className="gradient-primary flex h-8 w-8 items-center justify-center rounded-lg">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+            <img
+              src="/logo.png"
+              alt="ConvertX Pro"
+              className="h-10 w-auto object-contain"
+              onError={(e) => {
+                const t = e.currentTarget;
+                t.style.display = "none";
+                const fallback = t.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
+            <div
+              className="flex items-center gap-2"
+              style={{ display: "none" }}
+            >
+              <div className="gradient-primary flex h-8 w-8 items-center justify-center rounded-lg">
+                <Zap className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="text-lg font-bold text-foreground">
+                Convert<span className="gradient-text">X</span> Pro
+              </span>
             </div>
-            <span className="text-lg font-bold text-foreground">
-              Convert<span className="gradient-text">X</span> Pro
-            </span>
           </div>
           <p className="mb-8 max-w-sm text-sm leading-relaxed text-muted-foreground">
             The world's most advanced privacy-first document processing
