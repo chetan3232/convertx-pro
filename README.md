@@ -110,7 +110,7 @@ Deliver a platform where any user — student, developer, or enterprise professi
 - [x] Basic OCR (image → text + DOCX)
 - [x] Premium UI + dark/light mode
 - [x] Session history + file preview
-- [ ] Quick vs Lossless mode enforcement
+- [x] Quick vs Lossless mode enforcement
 
 ### Phase 2 — Scale *(4–6 weeks)*
 - [ ] eBook support: EPUB, MOBI, AZW
