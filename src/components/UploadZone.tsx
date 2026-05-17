@@ -168,7 +168,23 @@ const UploadZone = () => {
               filePath: uploadResult.filePath,
             });
             toast.warning(
-              `${file.name}: Full ${source.toUpperCase()}→${target.toUpperCase()} conversion requires backend. Showing original file.`
+              <div className="flex flex-col gap-2 text-left">
+                <span className="font-bold text-amber-400 flex items-center gap-1.5 text-sm">
+                  ⚡ Advanced PDF conversion engine is not configured yet.
+                </span>
+                <div className="text-xs text-muted-foreground flex flex-col gap-1">
+                  <span>To enable real {source.toUpperCase()} → {target.toUpperCase()} conversion:</span>
+                  <ul className="list-disc pl-4 space-y-0.5 mt-0.5">
+                    <li>Connect backend conversion service</li>
+                    <li>Install LibreOffice/pdf2docx worker</li>
+                    <li>Enable file processing API</li>
+                  </ul>
+                </div>
+                <span className="text-xs font-semibold text-amber-400/70 italic mt-1">
+                  Currently showing preview mode only.
+                </span>
+              </div>,
+              { duration: 7000 }
             );
           } else {
             updateJob(jobId, {

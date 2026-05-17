@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: convertx_api_gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - REDIS_URL=redis://redis-broker:6379
+      - SUPABASE_URL=https://asirvekudkytdciluenn.supabase.co
+      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaXJ2ZWt1ZGt5dGRjaWx1ZW5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NzQwNTIsImV4cCI6MjA5NDU1MDA1Mn0.MNZ1_rO9WkpKIV7QHt-x2rwNe1FWGqDcRWUv5y5iVaQ
+    depends_on:
+      - redis-broker
+    volumes:
+      - /app/node_modules
+      - ./api-gateway:/app
+    networks:
+      - convertx-network
+
+  python-worker:
+    build: ./python-worker
+    container_name: convertx_python_worker
+    environment:
+      - REDIS_URL=redis://redis-broker:6379
+      - API_GATEWAY_URL=http://api-gateway:5000
+    volumes:
+      - ./python-worker:/app
+      - /tmp/convertx:/tmp
+    depends_on:
+      - redis-broker
+    networks:
+      - convertx-network
+
+  redis-broker:
+    image: redis:7-alpine
+    container_name: convertx_redis_broker
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - convertx-network
+
+volumes:
+  redis-data:
+
+networks:
+  convertx-network:
+    driver: bridge

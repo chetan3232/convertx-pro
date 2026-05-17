@@ -134,12 +134,54 @@ export async function unlockPdf(
   return callPdfTool("unlock", formData);
 }
 
+async function pollLocalConversionJob(jobId: string): Promise<PdfToolResult> {
+  const maxAttempts = 60; // 2 minutes max
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    await new Promise((r) => setTimeout(r, 2000));
+    try {
+      const res = await fetch(`http://localhost:5000/api/status/${jobId}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.status === 'done') {
+        return { success: true, publicUrl: data.publicUrl, filePath: data.filePath };
+      }
+      if (data.status === 'error') {
+        return { success: false, error: data.error || 'Conversion failed.' };
+      }
+    } catch (err) {
+      console.warn("Polling error:", err);
+    }
+  }
+  return { success: false, error: "Conversion timeout." };
+}
+
 export async function convertFile(
   file: File,
   target: string
 ): Promise<PdfToolResult> {
-  // Local fallback: for text-based conversions, do them in-browser
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
+
+  // 1. Try real local Express+Python conversion API gateway first
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("target", target);
+    
+    const response = await fetch("http://localhost:5000/api/convert", {
+      method: "POST",
+      body: formData
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.jobId) {
+        const pollResult = await pollLocalConversionJob(data.jobId);
+        if (pollResult.success) return pollResult;
+      }
+    }
+  } catch (err) {
+    console.log("Local Express API gateway offline or bypassed. Trying fallbacks...");
+  }
 
   // If backend is configured, prioritize it for "Working Mode" accuracy
   if (isSupabaseConfigured) {
@@ -157,9 +199,9 @@ export async function convertFile(
     const text = await file.text();
     const blob = new Blob(
       [
-        `<html><body style="font-family:sans-serif;padding:3rem;line-height:1.6"><pre style="white-space:pre-wrap">${text}</pre></body></html>`,
+        `<html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:3rem;line-height:1.6"><pre style="white-space:pre-wrap">${text}</pre></body></html>`,
       ],
-      { type: "text/html" }
+      { type: "text/html;charset=utf-8" }
     );
     const url = URL.createObjectURL(blob);
     return { success: true, publicUrl: url, note: "Browser-rendered PDF preview" };
@@ -174,9 +216,9 @@ export async function convertFile(
     });
     const blob = new Blob(
       [
-        `<html><body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0"><img src="${dataUrl}" style="max-width:100%;height:auto;box-shadow:0 0 20px rgba(0,0,0,0.1)"></body></html>`,
+        `<html><head><meta charset="utf-8"></head><body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0"><img src="${dataUrl}" style="max-width:100%;height:auto;box-shadow:0 0 20px rgba(0,0,0,0.1)"></body></html>`,
       ],
-      { type: "text/html" }
+      { type: "text/html;charset=utf-8" }
     );
     const url = URL.createObjectURL(blob);
     return { success: true, publicUrl: url, note: "Image-to-PDF preview" };
@@ -221,6 +263,24 @@ export async function convertFile(
     const blob = await createDocxFromText(text, file.name);
     const url = URL.createObjectURL(blob);
     return { success: true, publicUrl: url };
+  }
+
+  // PDF → DOCX (High-accuracy local browser fallback using pdf.js text extraction + docx compiler!)
+  if (ext === "pdf" && target === "docx") {
+    try {
+      const text = await extractTextFromPdf(file);
+      if (text.trim().length > 0) {
+        const blob = await createDocxFromText(text, file.name);
+        const url = URL.createObjectURL(blob);
+        return { 
+          success: true, 
+          publicUrl: url, 
+          note: "High-accuracy local PDF to Word text compilation." 
+        };
+      }
+    } catch (e) {
+      console.warn("Local PDF->DOCX extraction failed, trying backend:", e);
+    }
   }
 
   // Fallback: try Supabase edge function

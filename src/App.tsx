@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
 import ToolPage from "./pages/ToolPage";
 import NotFound from "./pages/NotFound";
+import Settings from "./pages/Settings";
+import History from "./pages/History";
 
 import { ThemeProvider } from "next-themes";
 
@@ -20,6 +22,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/history" element={<History />} />
             <Route path="/tools/:tool" element={<ToolPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

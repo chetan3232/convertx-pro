@@ -1,0 +1,22 @@
+{
+  "name": "convertx-api-gateway",
+  "version": "1.0.0",
+  "description": "Express Gateway for ConvertX Pro distributed layout conversions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "axios": "^1.7.9",
+    "bull": "^4.16.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

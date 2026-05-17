@@ -26,20 +26,20 @@ export const HistoryDrawer = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 md:p-8 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-background/90 backdrop-blur-md"
           />
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 right-0 top-0 z-[70] flex w-full max-w-md flex-col border-l border-border bg-card shadow-2xl"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 28, stiffness: 220 }}
+            className="relative z-10 flex w-full max-w-2xl flex-col rounded-3xl border border-border bg-card shadow-2xl overflow-hidden max-h-none min-h-0 my-auto"
           >
             <div className="flex items-center justify-between border-b border-border p-6">
               <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export const HistoryDrawer = ({
               </div>
             )}
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

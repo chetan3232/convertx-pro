@@ -236,7 +236,7 @@ const ResultsView = () => {
           className="h-12 rounded-xl border-border px-8 font-bold text-foreground hover:bg-secondary"
         >
           <RotateCcw className="mr-2 h-4 w-4" />
-          Start New Batch
+          Start New Session
         </Button>
         {doneJobs.length > 0 && (
           <p className="text-xs text-muted-foreground">

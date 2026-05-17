@@ -6,8 +6,8 @@ import {
   StandardFonts,
   rgb,
   degrees,
-} from "https://esm.sh/pdf-lib@1.17.1";
-import { Document, Packer, Paragraph, TextRun } from "https://esm.sh/docx@9.6.1";
+} from "npm:pdf-lib@1.17.1";
+import { Document, Packer, Paragraph, TextRun } from "npm:docx@9.6.1";
 import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {

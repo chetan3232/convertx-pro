@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pdf2docx
+requests
+pydantic>=2.9.0
+supabase
+python-docx
+python-multipart
+python-dotenv

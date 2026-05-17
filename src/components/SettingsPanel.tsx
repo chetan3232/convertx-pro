@@ -34,22 +34,22 @@ export const SettingsPanel = ({
     <motion.div
       initial={false}
       animate={isOpen ? { opacity: 1, pointerEvents: "auto" } : { opacity: 0, pointerEvents: "none" }}
-      className="fixed inset-0 z-[80]"
+      className="fixed inset-0 z-[80] flex items-start justify-center p-4 md:p-8 overflow-y-auto"
     >
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={isOpen ? { opacity: 1 } : { opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+        className="fixed inset-0 bg-background/90 backdrop-blur-md"
       />
 
       {/* Panel */}
       <motion.div
-        initial={{ x: "100%" }}
-        animate={isOpen ? { x: 0 } : { x: "100%" }}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={isOpen ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
-        className="absolute bottom-0 right-0 top-0 flex w-full max-w-md flex-col border-l border-border bg-card shadow-2xl"
+        className="relative z-10 flex w-full max-w-2xl flex-col rounded-3xl border border-border bg-card shadow-2xl overflow-hidden max-h-none min-h-0 my-auto"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border p-6">

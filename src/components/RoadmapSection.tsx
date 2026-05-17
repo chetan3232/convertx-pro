@@ -26,7 +26,7 @@ const phases = [
       { done: true,  text: "Basic OCR (image → text)" },
       { done: true,  text: "Premium UI + dark/light mode" },
       { done: true,  text: "Session history + file preview" },
-      { done: false, text: "Conversion mode: Quick vs Lossless" },
+      { done: true,  text: "Conversion mode: Quick vs Lossless" },
     ],
     priority: "Execution Priority: PDF ↔ DOCX · OCR · Batch",
   },
